@@ -43,20 +43,16 @@ function New-CalendarIcon($size, $path) {
   $g.FillRectangle($chartreuseBrush, $ring1X, $ringTop, $ringW, $ringH)
   $g.FillRectangle($chartreuseBrush, $ring2X, $ringTop, $ringW, $ringH)
 
-  # today marker
-  $markSize = Scale 64
-  $markX = $pageX + ($pageW - $markSize) / 2
-  $markGap = Scale 40
-  $markY = $pageY + $headerH + $markGap
-  $markRad = Scale 10
-  $markPath = New-Object System.Drawing.Drawing2D.GraphicsPath
-  $md = $markRad * 2
-  $markPath.AddArc($markX, $markY, $md, $md, 180, 90)
-  $markPath.AddArc($markX + $markSize - $md, $markY, $md, $md, 270, 90)
-  $markPath.AddArc($markX + $markSize - $md, $markY + $markSize - $md, $md, $md, 0, 90)
-  $markPath.AddArc($markX, $markY + $markSize - $md, $md, $md, 90, 90)
-  $markPath.CloseFigure()
-  $g.FillPath($headerBrush, $markPath)
+  # date number, filling the body below the header
+  $numAreaY = $pageY + $headerH
+  $numAreaH = $pageH - $headerH
+  $numRect = New-Object System.Drawing.RectangleF($pageX, $numAreaY, $pageW, $numAreaH)
+  $fontSize = Scale 150
+  $font = New-Object System.Drawing.Font("Arial", $fontSize, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+  $format = New-Object System.Drawing.StringFormat
+  $format.Alignment = [System.Drawing.StringAlignment]::Center
+  $format.LineAlignment = [System.Drawing.StringAlignment]::Center
+  $g.DrawString("1", $font, $headerBrush, $numRect, $format)
 
   $g.Dispose()
   $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)
