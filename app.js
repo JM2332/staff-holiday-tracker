@@ -448,7 +448,7 @@ function renderStaffTable() {
       <td>${escapeHtml(s.role || '—')}</td>
       <td><span class="pill ${s.type === 'hourly' ? 'pill-hourly' : 'pill-fixed'}">${s.type === 'hourly' ? 'Hourly' : 'Fixed hours'}</span></td>
       <td>${fmtDate(s.startDate)}</td>
-      <td class="num">${s.type === 'fixed' ? (s.contractedHours || '—') : '—'}</td>
+      <td class="num">${s.contractedHours || '—'}</td>
       <td><span class="pill ${s.active ? 'pill-active' : 'pill-inactive'}">${s.active ? 'Active' : 'Inactive'}</span></td>
       <td><button class="link-btn" data-edit-staff="${s.id}">Edit</button></td>
     </tr>`).join('');
@@ -740,7 +740,14 @@ function openStaffModal(staffId) {
     document.getElementById('staff-active').checked = true;
     deleteBtn.style.display = 'none';
   }
+  updateContractedLabel();
   overlay.classList.remove('hidden');
+}
+
+function updateContractedLabel() {
+  const isHourly = document.getElementById('staff-type').value === 'hourly';
+  document.getElementById('staff-contracted-label-text').textContent =
+    isHourly ? 'Typical weekly hours (optional)' : 'Contracted hours per week';
 }
 
 function closeStaffModal() {
@@ -751,6 +758,7 @@ function initStaffModal() {
   document.getElementById('add-staff-btn').addEventListener('click', () => openStaffModal(null));
   document.getElementById('staff-modal-close').addEventListener('click', closeStaffModal);
   document.getElementById('staff-overlay').addEventListener('click', e => { if (e.target.id === 'staff-overlay') closeStaffModal(); });
+  document.getElementById('staff-type').addEventListener('change', updateContractedLabel);
 
   document.getElementById('staff-tbody').addEventListener('click', e => {
     const id = e.target.dataset.editStaff;
@@ -833,7 +841,7 @@ function openStaffDetail(staffId) {
     <div class="detail-meta">
       <div><span class="meta-label">Start date</span>${fmtDate(s.startDate)}</div>
       ${s.leaveDate ? `<div><span class="meta-label">Leave date</span>${fmtDate(s.leaveDate)}</div>` : ''}
-      ${s.type === 'fixed' ? `<div><span class="meta-label">Contracted hrs/wk</span>${s.contractedHours || '—'}</div>` : ''}
+      ${s.contractedHours ? `<div><span class="meta-label">${s.type === 'fixed' ? 'Contracted hrs/wk' : 'Typical hrs/wk'}</span>${s.contractedHours}</div>` : ''}
     </div>
     <div class="stat-grid">
       <div class="stat-card"><span class="stat-value">${mainLabel}</span><span class="stat-label">${isHourly ? 'Accrued' : 'Entitlement'} this year</span></div>
